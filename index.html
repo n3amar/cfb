@@ -992,6 +992,12 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Active filter ───────────────────────────────────────────────────────── */
 
+/* An author display rule outranks the UA stylesheet's [hidden] { display: none }, so
+   the exported filter bar — which ships hidden and is revealed by the static shim —
+   stayed visible and empty on the published board until this was added. The cards were
+   fine because nothing sets display on .game. */
+.filter[hidden] { display: none; }
+
 .filter {
     display: flex;
     align-items: center;
