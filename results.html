@@ -546,11 +546,22 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Game cards ──────────────────────────────────────────────────────────── */
 
+/* Two to a row for browsing; an OPEN card spans the whole row, so its team stats have
+   room to sit offense beside defense. One card per row was tried and dropped: the
+   closed cards were too spread out to scan.
+
+   `dense` lets the card after an opened one fill the slot it vacated, so opening a
+   right-hand card does not leave a hole. The price is that one card can sit a place
+   earlier than its kickoff order while another is open. board-filter.js scrolls the
+   opened card into view, since it may have moved down a row. */
 .board {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    grid-auto-flow: row dense;
     gap: 11px;
 }
+
+.game--open { grid-column: 1 / -1; scroll-margin-top: 14px; }
 
 .game {
     background: var(--panel);
@@ -594,7 +605,7 @@ a { color: inherit; text-decoration: none; }
 
 .side {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 10px;
     padding: 4px 0;
@@ -611,6 +622,37 @@ a { color: inherit; text-decoration: none; }
 }
 
 .side--fav .side__team { color: var(--chalk); font-weight: 600; }
+
+/* Logo + name. min-width: 0 so a long name still ellipsises beside the mark rather than
+   pushing the score off the card. */
+.side__id {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Drawn at 32px from a 64px file, so it stays sharp on a high-density screen. */
+.mark-logo {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+/* No logo: the same footprint, so both rows of a card keep their names aligned. */
+.mark-logo--init {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: var(--rule-soft);
+    color: var(--chalk-mute);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+}
 
 .side__score {
     font-family: var(--mono);
@@ -859,6 +901,44 @@ a { color: inherit; text-decoration: none; }
     letter-spacing: 0.06em;
     text-transform: none;
     color: var(--chalk-mute);
+}
+
+.tstats__modes { display: flex; gap: 6px; margin: 10px 0 2px; }
+
+/* Core / All. Every row is in the document; the board's one attribute hides the extras,
+   so the live page and an export switch it the same way. */
+.board[data-stats="core"] .tstats [data-core="0"] { display: none; }
+
+.tstats__mode {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--chalk-mute);
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 3px 9px;
+    cursor: pointer;
+}
+
+.tstats__mode:hover { color: var(--chalk); }
+.tstats__mode--on { color: var(--signal); border-color: var(--signal-dim); background: var(--signal-wash); }
+
+/* Offense left, defense right, so the list reads half as long. Stacks below 720px,
+   where two three-column tables side by side would crush the stat labels. */
+.tstats__cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 28px;
+    align-items: start;
+}
+
+@media (max-width: 720px) {
+    .tstats__cols { grid-template-columns: minmax(0, 1fr); }
+
+    /* Alignment padding only means something beside the offense column. */
+    .tstats__pad { display: none; }
 }
 
 .tstats__grid { margin: 10px 0 12px; table-layout: fixed; }
@@ -2533,26 +2613,26 @@ a { color: inherit; text-decoration: none; }
                 said. Walk-forward, so each week was projected from the weeks before it and
                 nothing here has seen the result it is being judged on.
             </p></header><div class="stats stats--wide" b-dkv3jdcz3w><div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Games graded</div>
-                    <div class="stat__v" b-dkv3jdcz3w>157</div></div>
+                    <div class="stat__v" b-dkv3jdcz3w>158</div></div>
                 <div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Margin error</div>
-                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>13.07</div>
-                    <div class="stat__sub" b-dkv3jdcz3w><span class="cool" b-dkv3jdcz3w>market 10.91</span></div></div>
+                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>13.06</div>
+                    <div class="stat__sub" b-dkv3jdcz3w><span class="cool" b-dkv3jdcz3w>market 10.93</span></div></div>
                 <div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Straight up</div>
-                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>125-32</div>
-                    <div class="stat__sub" b-dkv3jdcz3w>79.6%<span class="cool" b-dkv3jdcz3w> · market 127-22</span></div></div>
+                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>126-32</div>
+                    <div class="stat__sub" b-dkv3jdcz3w>79.7%<span class="cool" b-dkv3jdcz3w> · market 128-22</span></div></div>
                 <div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Against the spread</div>
-                    <div class="stat__v" b-dkv3jdcz3w>66-81-4</div>
-                    <div class="stat__sub" b-dkv3jdcz3w>44.9%<span b-dkv3jdcz3w> · break-even 52.4%</span></div></div></div><div class="warn" b-dkv3jdcz3w><strong b-dkv3jdcz3w>Read the ATS column as variance, not as edge.</strong><span b-dkv3jdcz3w>
+                    <div class="stat__v" b-dkv3jdcz3w>67-81-4</div>
+                    <div class="stat__sub" b-dkv3jdcz3w>45.3%<span b-dkv3jdcz3w> · break-even 52.4%</span></div></div></div><div class="warn" b-dkv3jdcz3w><strong b-dkv3jdcz3w>Read the ATS column as variance, not as edge.</strong><span b-dkv3jdcz3w>
                             The same measurement over 2,995 games
                             recorded 50.5% — Model error 12.84 against the market&#x27;s 12.09. Betting every game returns -3.5% at -110.</span><span b-dkv3jdcz3w>
-                        A season is 157 games. It takes several hundred
+                        A season is 158 games. It takes several hundred
                         before a spread record separates from a coin flip at all.
                     </span></div><div class="tiers" b-dkv3jdcz3w><div class="tiers__k" b-dkv3jdcz3w>Spread record by the model's own conviction</div>
                     <div class="tiers__grid" b-dkv3jdcz3w><div class="tier" b-dkv3jdcz3w><div class="tier__k" b-dkv3jdcz3w>Strong</div>
                                 <div class="tier__v" b-dkv3jdcz3w>37-39-2</div>
                                 <div class="tier__sub" b-dkv3jdcz3w>48.7%</div></div><div class="tier" b-dkv3jdcz3w><div class="tier__k" b-dkv3jdcz3w>Lean</div>
-                                <div class="tier__v" b-dkv3jdcz3w>13-20-1</div>
-                                <div class="tier__sub" b-dkv3jdcz3w>39.4%</div></div><div class="tier" b-dkv3jdcz3w><div class="tier__k" b-dkv3jdcz3w>Coinflip</div>
+                                <div class="tier__v" b-dkv3jdcz3w>14-20-1</div>
+                                <div class="tier__sub" b-dkv3jdcz3w>41.2%</div></div><div class="tier" b-dkv3jdcz3w><div class="tier__k" b-dkv3jdcz3w>Coinflip</div>
                                 <div class="tier__v" b-dkv3jdcz3w>16-22-1</div>
                                 <div class="tier__sub" b-dkv3jdcz3w>42.1%</div></div></div>
                     <p class="tiers__note" b-dkv3jdcz3w>
@@ -2567,11 +2647,11 @@ a { color: inherit; text-decoration: none; }
                 The same treatment for the total: how far off the model and the market ran,
                 and — where a line was captured — whether the model's Over/Under call beat it.
             </p><div class="stats stats--wide" b-dkv3jdcz3w><div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Total error</div>
-                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>12.36</div>
-                    <div class="stat__sub" b-dkv3jdcz3w><span class="cool" b-dkv3jdcz3w>market 12.40</span></div></div>
+                    <div class="stat__v stat__v--signal" b-dkv3jdcz3w>12.29</div>
+                    <div class="stat__sub" b-dkv3jdcz3w><span class="cool" b-dkv3jdcz3w>market 12.33</span></div></div>
                 <div class="stat" b-dkv3jdcz3w><div class="stat__k" b-dkv3jdcz3w>Over/Under</div>
-                    <div class="stat__v" b-dkv3jdcz3w>80-70-1</div>
-                    <div class="stat__sub" b-dkv3jdcz3w>53.3%<span b-dkv3jdcz3w> · break-even 52.4%</span></div></div></div><div class="warn" b-dkv3jdcz3w><strong b-dkv3jdcz3w>This is the weakest column on the page — read it as such.</strong><span b-dkv3jdcz3w>
+                    <div class="stat__v" b-dkv3jdcz3w>80-71-1</div>
+                    <div class="stat__sub" b-dkv3jdcz3w>53.0%<span b-dkv3jdcz3w> · break-even 52.4%</span></div></div></div><div class="warn" b-dkv3jdcz3w><strong b-dkv3jdcz3w>This is the weakest column on the page — read it as such.</strong><span b-dkv3jdcz3w>
                             The same measurement over 2,995 games
                             recorded 49.5% — Model error 13.08 against the market&#x27;s 12.49. Betting every game returns -5.4% at -110.</span></div><div class="grid grid--totals" b-dkv3jdcz3w><div class="grid__head" b-dkv3jdcz3w><span b-dkv3jdcz3w>Wk</span>
                     <span class="num" b-dkv3jdcz3w>Games</span>
@@ -2588,12 +2668,17 @@ a { color: inherit; text-decoration: none; }
                         <span class="num hot" b-dkv3jdcz3w>10.59</span>
                         <span class="num cool" b-dkv3jdcz3w>11.09</span>
                         <span class="num hot" b-dkv3jdcz3w>&#x2B;0.13</span>
-                        <span class="num" b-dkv3jdcz3w>28-19</span></button><button class="grid__row grid__row--on" b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>3</span>
+                        <span class="num" b-dkv3jdcz3w>28-19</span></button><button class="grid__row " b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>3</span>
                         <span class="num" b-dkv3jdcz3w>57</span>
                         <span class="num hot" b-dkv3jdcz3w>13.88</span>
                         <span class="num cool" b-dkv3jdcz3w>14.32</span>
                         <span class="num hot" b-dkv3jdcz3w>&#x2B;0.29</span>
-                        <span class="num" b-dkv3jdcz3w>30-22-1</span></button></div><h2 class="section" b-dkv3jdcz3w>Week by week</h2>
+                        <span class="num" b-dkv3jdcz3w>30-22-1</span></button><button class="grid__row grid__row--on" b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>4</span>
+                        <span class="num" b-dkv3jdcz3w>1</span>
+                        <span class="num hot" b-dkv3jdcz3w>1.20</span>
+                        <span class="num cool" b-dkv3jdcz3w>0.50</span>
+                        <span class="num " b-dkv3jdcz3w>-0.70</span>
+                        <span class="num" b-dkv3jdcz3w>0-1</span></button></div><h2 class="section" b-dkv3jdcz3w>Week by week</h2>
             <p class="section__note" b-dkv3jdcz3w>
                 Margin, the totals table above, and every per-game detail all open from
                 whichever row you click below. Each game carries three verdicts:
@@ -2620,1153 +2705,39 @@ a { color: inherit; text-decoration: none; }
                         <span class="num cool" b-dkv3jdcz3w>10.97</span>
                         <span class="num " b-dkv3jdcz3w>-2.79</span>
                         <span class="num" b-dkv3jdcz3w>35-14</span>
-                        <span class="num" b-dkv3jdcz3w>24-22-1</span></button><button class="grid__row grid__row--on" b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>3</span>
+                        <span class="num" b-dkv3jdcz3w>24-22-1</span></button><button class="grid__row " b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>3</span>
                         <span class="num" b-dkv3jdcz3w>57</span>
                         <span class="num hot" b-dkv3jdcz3w>10.48</span>
                         <span class="num cool" b-dkv3jdcz3w>8.20</span>
                         <span class="num " b-dkv3jdcz3w>-1.66</span>
                         <span class="num" b-dkv3jdcz3w>46-11</span>
-                        <span class="num" b-dkv3jdcz3w>23-29-1</span></button><div class="detail" b-dkv3jdcz3w><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Syracuse @ Pittsburgh</span>
+                        <span class="num" b-dkv3jdcz3w>23-29-1</span></button><button class="grid__row grid__row--on" b-dkv3jdcz3w><span class="grid__wk" b-dkv3jdcz3w>4</span>
+                        <span class="num" b-dkv3jdcz3w>1</span>
+                        <span class="num hot" b-dkv3jdcz3w>10.61</span>
+                        <span class="num cool" b-dkv3jdcz3w>14.50</span>
+                        <span class="num hot" b-dkv3jdcz3w>&#x2B;3.89</span>
+                        <span class="num" b-dkv3jdcz3w>1-0</span>
+                        <span class="num" b-dkv3jdcz3w>1-0</span></button><div class="detail" b-dkv3jdcz3w><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Liberty @ Coastal Carolina</span>
                                         <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>13–27</span></span></div>
+                                            <span class="row__score" b-dkv3jdcz3w>34–17</span></span></div>
 
                                     <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Pittsburgh 25.0</span></span>
+                                            <span class="row__v hot" b-dkv3jdcz3w>Liberty 6.4</span></span>
 
                                         <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Pittsburgh 10.5</span></span>
+                                            <span class="row__v cool" b-dkv3jdcz3w>Liberty 2.5</span></span>
 
                                         <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>47.8</span><span class="cool" b-dkv3jdcz3w> / 51.5</span><span b-dkv3jdcz3w> → 40</span></span></span></div>
+                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.8</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 51</span></span></span></div>
 
                                     <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
                                             <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
 
                                         <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Pittsburgh -10.5 &#xB7; Strong</span></span></span>
+                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Liberty -2.5 &#xB7; Lean</span></span></span>
 
                                         <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Miami @ Wake Forest</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>33–20</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Miami 21.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Miami 20.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>54.1</span><span class="cool" b-dkv3jdcz3w> / 56.0</span><span b-dkv3jdcz3w> → 53</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Miami -20.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Houston @ Texas Tech</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>26–28</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Texas Tech 16.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Texas Tech 7.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.8</span><span class="cool" b-dkv3jdcz3w> / 52.5</span><span b-dkv3jdcz3w> → 54</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Texas Tech -7.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Coastal Carolina @ Delaware</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>14–22</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Delaware 7.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Delaware 5.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>53.6</span><span class="cool" b-dkv3jdcz3w> / 56.5</span><span b-dkv3jdcz3w> → 36</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Delaware -5.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>North Carolina @ Clemson</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>20–28</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Clemson 5.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Clemson 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>46.1</span><span class="cool" b-dkv3jdcz3w> / 44.5</span><span b-dkv3jdcz3w> → 48</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Clemson -3.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Tulane @ Kansas State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>20–31</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Kansas State 14.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Kansas State 20.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>46.5</span><span class="cool" b-dkv3jdcz3w> / 49.5</span><span b-dkv3jdcz3w> → 51</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Tulane &#x2B;20.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Akron @ Minnesota</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>7–41</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Minnesota 16.6</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Minnesota 22.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.5</span><span class="cool" b-dkv3jdcz3w> / 49.5</span><span b-dkv3jdcz3w> → 48</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Akron &#x2B;22.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Bowling Green @ Iowa State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>7–55</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Iowa State 30.8</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Iowa State 23.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.9</span><span class="cool" b-dkv3jdcz3w> / 43.5</span><span b-dkv3jdcz3w> → 62</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Iowa State -23.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Georgia @ Arkansas</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>45–17</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Georgia 19.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Georgia 24.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>57.4</span><span class="cool" b-dkv3jdcz3w> / 54.5</span><span b-dkv3jdcz3w> → 62</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Arkansas &#x2B;24.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Arizona State @ Kansas</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>24–17</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Kansas 0.6</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>&#x2014;</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.4</span><span b-dkv3jdcz3w> → 41</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Kent State @ Ohio State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>3–59</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Ohio State 56.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Ohio State 52.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.5</span><span class="cool" b-dkv3jdcz3w> / 59.5</span><span b-dkv3jdcz3w> → 62</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Ohio State -52.3 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Buffalo @ Penn State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>13–55</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Penn State 36.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Penn State 39.8</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.9</span><span class="cool" b-dkv3jdcz3w> / 48.3</span><span b-dkv3jdcz3w> → 68</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Buffalo &#x2B;39.8 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>North Texas @ Texas State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>35–49</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>North Texas 16.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Texas State 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>56.9</span><span class="cool" b-dkv3jdcz3w> / 62.5</span><span b-dkv3jdcz3w> → 84</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>North Texas &#x2B;3.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Eastern Michigan @ Wisconsin</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>10–54</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Wisconsin 20.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Wisconsin 23.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.5</span><span class="cool" b-dkv3jdcz3w> / 44.3</span><span b-dkv3jdcz3w> → 64</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Eastern Michigan &#x2B;23.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>NC State @ Vanderbilt</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>31–35</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Vanderbilt 14.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Vanderbilt 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>51.7</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 66</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Vanderbilt -3.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Wyoming @ Central Michigan</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>10–24</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Central Michigan 2.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Wyoming 1.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.2</span><span class="cool" b-dkv3jdcz3w> / 40.0</span><span b-dkv3jdcz3w> → 34</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Central Michigan &#x2B;1.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Temple @ Toledo</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>48–49</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Toledo 12.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Toledo 5.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.6</span><span class="cool" b-dkv3jdcz3w> / 48.5</span><span b-dkv3jdcz3w> → 97</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Toledo -5.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>UTEP @ Michigan</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>17–52</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Michigan 36.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Michigan 34.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>45.9</span><span class="cool" b-dkv3jdcz3w> / 48.5</span><span b-dkv3jdcz3w> → 69</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Michigan -34.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Kentucky @ Texas A&amp;M</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>31–21</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Texas A&amp;M 25.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Texas A&amp;M 17.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>54.9</span><span class="cool" b-dkv3jdcz3w> / 50.0</span><span b-dkv3jdcz3w> → 52</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Texas A&amp;M -17.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Utah State @ Utah</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>0–33</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Utah 25.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Utah 26.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.1</span><span class="cool" b-dkv3jdcz3w> / 55.5</span><span b-dkv3jdcz3w> → 33</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Utah State &#x2B;26.3 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Florida State @ Alabama</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>36–50</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Alabama 21.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Alabama 18.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>53.7</span><span class="cool" b-dkv3jdcz3w> / 49.5</span><span b-dkv3jdcz3w> → 86</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Alabama -18.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>USC @ Rutgers</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>42–35</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>USC 24.8</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>USC 21.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.4</span><span class="cool" b-dkv3jdcz3w> / 59.0</span><span b-dkv3jdcz3w> → 77</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>USC -21.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Miami (OH) @ Cincinnati</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>31–35</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Cincinnati 21.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Cincinnati 14.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.7</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 66</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Cincinnati -14.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>SMU @ Louisville</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>31–41</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Louisville 1.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Louisville 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.9</span><span class="cool" b-dkv3jdcz3w> / 57.5</span><span b-dkv3jdcz3w> → 72</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>SMU &#x2B;3.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Ball State @ Liberty</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>15–51</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Liberty 16.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Liberty 14.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.4</span><span class="cool" b-dkv3jdcz3w> / 49.0</span><span b-dkv3jdcz3w> → 66</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Liberty -14.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Stanford @ Duke</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>7–35</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Duke 18.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Duke 10.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.3</span><span class="cool" b-dkv3jdcz3w> / 51.0</span><span b-dkv3jdcz3w> → 42</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Duke -10.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Western Kentucky @ Indiana</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>0–38</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Indiana 56.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Indiana 44.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>60.1</span><span class="cool" b-dkv3jdcz3w> / 59.5</span><span b-dkv3jdcz3w> → 38</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Indiana -44.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Louisiana Tech @ Baylor</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>19–36</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Baylor 15.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Baylor 20.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.6</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 55</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Louisiana Tech &#x2B;20.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Mississippi State @ South Carolina</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>41–34</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>South Carolina 4.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>South Carolina 3.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.6</span><span class="cool" b-dkv3jdcz3w> / 59.0</span><span b-dkv3jdcz3w> → 75</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>South Carolina -3.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Charlotte @ App State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>21–26</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>App State 13.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>&#x2014;</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.4</span><span b-dkv3jdcz3w> → 47</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Florida International @ Florida Atlantic</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>10–16</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Florida International 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Florida Atlantic 4.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.2</span><span class="cool" b-dkv3jdcz3w> / 62.0</span><span b-dkv3jdcz3w> → 26</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Florida International &#x2B;4.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>East Carolina @ Old Dominion</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>20–17</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Old Dominion 4.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Old Dominion 2.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>54.1</span><span class="cool" b-dkv3jdcz3w> / 48.5</span><span b-dkv3jdcz3w> → 37</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Old Dominion -2.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Marshall @ Missouri State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>30–24</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Marshall 0.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Marshall 4.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.8</span><span class="cool" b-dkv3jdcz3w> / 52.5</span><span b-dkv3jdcz3w> → 54</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Missouri State &#x2B;4.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Florida @ Auburn</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>44–39</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Auburn 0.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Florida 2.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>54.3</span><span class="cool" b-dkv3jdcz3w> / 53.0</span><span b-dkv3jdcz3w> → 83</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Auburn &#x2B;2.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Western Michigan @ Rice</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>28–21</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Western Michigan 18.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Western Michigan 8.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>48.4</span><span class="cool" b-dkv3jdcz3w> / 43.5</span><span b-dkv3jdcz3w> → 49</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Western Michigan -8.5 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>UConn @ Southern Miss</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>48–20</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>UConn 0.6</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>&#x2014;</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.3</span><span b-dkv3jdcz3w> → 68</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Nevada @ Middle Tennessee</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>20–27</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Nevada 7.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Nevada 3.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.8</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 47</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Nevada -3.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Georgia Southern @ Jacksonville State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>27–31</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Jacksonville State 1.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Jacksonville State 3.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>46.2</span><span class="cool" b-dkv3jdcz3w> / 52.5</span><span b-dkv3jdcz3w> → 58</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Georgia Southern &#x2B;3.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Ohio @ South Alabama</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>36–41</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>South Alabama 1.3</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>South Alabama 7.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.8</span><span class="cool" b-dkv3jdcz3w> / 49.0</span><span b-dkv3jdcz3w> → 77</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Ohio &#x2B;7.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Troy @ Missouri</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>17–27</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Missouri 27.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Missouri 27.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.0</span><span class="cool" b-dkv3jdcz3w> / 49.5</span><span b-dkv3jdcz3w> → 44</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Missouri -27.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Georgia State @ UCF</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>30–44</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>UCF 15.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>UCF 17.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>45.6</span><span class="cool" b-dkv3jdcz3w> / 50.0</span><span b-dkv3jdcz3w> → 74</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Georgia State &#x2B;17.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>West Virginia @ Virginia</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>38–27</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Virginia 20.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>&#x2014;</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.8</span><span b-dkv3jdcz3w> → 65</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--none" b-dkv3jdcz3w>&#xB7; no pick</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Virginia Tech @ Maryland</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>35–26</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Maryland 2.1</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Virginia Tech 2.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>53.7</span><span class="cool" b-dkv3jdcz3w> / 53.5</span><span b-dkv3jdcz3w> → 61</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Maryland &#x2B;2.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Colorado @ Northwestern</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>7–41</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Northwestern 3.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Northwestern 3.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>47.5</span><span class="cool" b-dkv3jdcz3w> / 48.0</span><span b-dkv3jdcz3w> → 48</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Colorado &#x2B;3.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--push" b-dkv3jdcz3w>= push</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>New Mexico @ Oklahoma</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>6–14</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Oklahoma 17.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Oklahoma 21.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>48.2</span><span class="cool" b-dkv3jdcz3w> / 45.5</span><span b-dkv3jdcz3w> → 20</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>New Mexico &#x2B;21.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>BYU @ Colorado State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>41–23</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>BYU 20.9</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>BYU 17.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.2</span><span class="cool" b-dkv3jdcz3w> / 53.0</span><span b-dkv3jdcz3w> → 64</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>BYU -17.5 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>LSU @ Ole Miss</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>24–32</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>LSU 1.2</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>LSU 3.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>57.5</span><span class="cool" b-dkv3jdcz3w> / 58.8</span><span b-dkv3jdcz3w> → 56</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Ole Miss &#x2B;3.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Michigan State @ Notre Dame</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>10–27</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Notre Dame 25.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Notre Dame 29.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>50.9</span><span class="cool" b-dkv3jdcz3w> / 51.5</span><span b-dkv3jdcz3w> → 37</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Michigan State &#x2B;29.0 &#xB7; Lean</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Kennesaw State @ Tennessee</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>9–42</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Tennessee 33.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Tennessee 35.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>54.6</span><span class="cool" b-dkv3jdcz3w> / 61.0</span><span b-dkv3jdcz3w> → 51</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Kennesaw State &#x2B;35.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>UTSA @ Texas</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>6–30</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Texas 27.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Texas 30.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>53.0</span><span class="cool" b-dkv3jdcz3w> / 58.5</span><span b-dkv3jdcz3w> → 36</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>UTSA &#x2B;30.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Arkansas State @ TCU</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>7–31</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>TCU 17.8</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>TCU 19.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.9</span><span class="cool" b-dkv3jdcz3w> / 56.0</span><span b-dkv3jdcz3w> → 38</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Arkansas State &#x2B;19.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>UAB @ Louisiana</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>14–21</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Louisiana 9.6</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Louisiana 7.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.9</span><span class="cool" b-dkv3jdcz3w> / 55.5</span><span b-dkv3jdcz3w> → 35</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--push" b-dkv3jdcz3w>= push</span><span class="row__pick" b-dkv3jdcz3w>Louisiana -7.0 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>James Madison @ San Diego State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>26–13</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>James Madison 6.7</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>San Diego State 2.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>46.3</span><span class="cool" b-dkv3jdcz3w> / 46.5</span><span b-dkv3jdcz3w> → 39</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>James Madison &#x2B;2.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Northern Illinois @ Arizona</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>17–42</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Arizona 28.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Arizona 34.0</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>49.7</span><span class="cool" b-dkv3jdcz3w> / 49.5</span><span b-dkv3jdcz3w> → 59</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Northern Illinois &#x2B;34.0 &#xB7; Strong</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>North Dakota State @ Sacramento State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>31–10</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>North Dakota State 25.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>North Dakota State 25.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>52.5</span><span class="cool" b-dkv3jdcz3w> / 50.5</span><span b-dkv3jdcz3w> → 41</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span><span class="row__pick" b-dkv3jdcz3w>Sacramento State &#x2B;25.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Fresno State @ San Jos&#xE9; State</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>26–10</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>Fresno State 3.8</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>Fresno State 4.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>51.0</span><span class="cool" b-dkv3jdcz3w> / 47.5</span><span b-dkv3jdcz3w> → 36</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>San Jos&#xE9; State &#x2B;4.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div><div class="row" b-dkv3jdcz3w><div class="row__head" b-dkv3jdcz3w><span class="row__match" b-dkv3jdcz3w>Purdue @ UCLA</span>
-                                        <span class="row__final" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>final</span>
-                                            <span class="row__score" b-dkv3jdcz3w>38–52</span></span></div>
-
-                                    <div class="row__band row__band--nums" b-dkv3jdcz3w><span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>model</span>
-                                            <span class="row__v hot" b-dkv3jdcz3w>UCLA 12.4</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>market</span>
-                                            <span class="row__v cool" b-dkv3jdcz3w>UCLA 13.5</span></span>
-
-                                        <span class="row__cell" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>total</span>
-                                            <span class="row__v" b-dkv3jdcz3w><span class="hot" b-dkv3jdcz3w>55.9</span><span class="cool" b-dkv3jdcz3w> / 52.5</span><span b-dkv3jdcz3w> → 90</span></span></span></div>
-
-                                    <div class="row__band row__band--marks" b-dkv3jdcz3w><span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>winner</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span>
-
-                                        <span class="row__cell row__cell--mark row__cell--spread" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>vs spread</span>
-                                            <span class="row__marked" b-dkv3jdcz3w><span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span><span class="row__pick" b-dkv3jdcz3w>Purdue &#x2B;13.5 &#xB7; Coinflip</span></span></span>
-
-                                        <span class="row__cell row__cell--mark" b-dkv3jdcz3w><span class="row__k" b-dkv3jdcz3w>O/U</span>
-                                            <span class="row__v mark2 mark2--win" b-dkv3jdcz3w>&#x2713; hit</span></span></div></div></div></div><div class="caveats" b-dkv3jdcz3w><h2 class="read__head" b-dkv3jdcz3w>How to read these</h2>
+                                            <span class="row__v mark2 mark2--loss" b-dkv3jdcz3w>&#x2717; miss</span></span></div></div></div></div><div class="caveats" b-dkv3jdcz3w><h2 class="read__head" b-dkv3jdcz3w>How to read these</h2>
                 <ul class="caveats__list" b-dkv3jdcz3w><li b-dkv3jdcz3w><strong b-dkv3jdcz3w>Straight up is the honest headline.</strong> It needs no price,
                         grades every game, and answers the question the model was built for:
                         who wins. A tie is a push, never a loss.
@@ -3779,9 +2750,9 @@ a { color: inherit; text-decoration: none; }
                     </li>
                     <li b-dkv3jdcz3w><strong b-dkv3jdcz3w>Model and market errors are measured on the same games.</strong>
                         Where a game carried no price, it counts toward the model's error but
-                        not the comparison — 151 of
-                        157 games are directly comparable on margin,
-                        151 on the total.
+                        not the comparison — 152 of
+                        158 games are directly comparable on margin,
+                        152 on the total.
                     </li>
                     <li b-dkv3jdcz3w><strong b-dkv3jdcz3w>Early weeks are rated on priors.</strong> Weeks 1–3 are included
                         because the board really did show those projections, but the ratings
@@ -3790,7 +2761,7 @@ a { color: inherit; text-decoration: none; }
                         backtests exclude them; this page does not.
                     </li>
                     <li b-dkv3jdcz3w>
-                        Market numbers: captured consensus, 314 of 3,563 fixtures (246 closing, 68 pre-kickoff). Ratings: 100 games played, primed with 2025 FPI seed at 85%, 2 from SRS.
+                        Market numbers: captured consensus, 314 of 3,563 fixtures (246 closing, 68 pre-kickoff). Ratings: 157 games played, primed with 2025 FPI seed at 85%, 2 from SRS.
                     </li></ul></div></main></div>
 </body>
 </html>
